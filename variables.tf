@@ -33,18 +33,18 @@ EOT
     resource_group_name = string
     tags                = optional(map(string))
     active_directory = optional(object({
-      aes_encryption_enabled            = optional(bool, false)
+      aes_encryption_enabled            = optional(bool) # Default: false
       dns_servers                       = list(string)
       domain                            = string
       kerberos_ad_name                  = optional(string)
       kerberos_kdc_ip                   = optional(string)
-      ldap_over_tls_enabled             = optional(bool, false)
-      ldap_signing_enabled              = optional(bool, false)
-      local_nfs_users_with_ldap_allowed = optional(bool, false)
-      organizational_unit               = optional(string, "CN=Computers")
+      ldap_over_tls_enabled             = optional(bool)   # Default: false
+      ldap_signing_enabled              = optional(bool)   # Default: false
+      local_nfs_users_with_ldap_allowed = optional(bool)   # Default: false
+      organizational_unit               = optional(string) # Default: "CN=Computers"
       password                          = string
       server_root_ca_certificate        = optional(string)
-      site_name                         = optional(string, "Default-First-Site-Name")
+      site_name                         = optional(string) # Default: "Default-First-Site-Name"
       smb_server_name                   = string
       username                          = string
     }))
