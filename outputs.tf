@@ -1,3 +1,7 @@
+output "netapp_accounts_id" {
+  description = "Map of id values across all netapp_accounts, keyed the same as var.netapp_accounts"
+  value       = { for k, v in azurerm_netapp_account.netapp_accounts : k => v.id }
+}
 output "netapp_accounts_active_directory" {
   description = "Map of active_directory values across all netapp_accounts, keyed the same as var.netapp_accounts"
   value       = { for k, v in azurerm_netapp_account.netapp_accounts : k => v.active_directory }
