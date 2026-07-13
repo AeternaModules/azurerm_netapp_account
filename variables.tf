@@ -33,18 +33,18 @@ EOT
     resource_group_name = string
     tags                = optional(map(string))
     active_directory = optional(object({
-      aes_encryption_enabled            = optional(bool) # Default: false
+      aes_encryption_enabled            = optional(bool)
       dns_servers                       = list(string)
       domain                            = string
       kerberos_ad_name                  = optional(string)
       kerberos_kdc_ip                   = optional(string)
-      ldap_over_tls_enabled             = optional(bool)   # Default: false
-      ldap_signing_enabled              = optional(bool)   # Default: false
-      local_nfs_users_with_ldap_allowed = optional(bool)   # Default: false
-      organizational_unit               = optional(string) # Default: "CN=Computers"
+      ldap_over_tls_enabled             = optional(bool)
+      ldap_signing_enabled              = optional(bool)
+      local_nfs_users_with_ldap_allowed = optional(bool)
+      organizational_unit               = optional(string)
       password                          = string
       server_root_ca_certificate        = optional(string)
-      site_name                         = optional(string) # Default: "Default-First-Site-Name"
+      site_name                         = optional(string)
       smb_server_name                   = string
       username                          = string
     }))
@@ -53,38 +53,6 @@ EOT
       type         = string
     }))
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.netapp_accounts : (
-        v.active_directory == null || (can(regex("^[(\\da-zA-Z-).]{1,255}$", v.active_directory.domain)))
-      )
-    ])
-    error_message = "The domain name must end with a letter or number before dot and start with a letter or number after dot and can not be longer than 255 characters in length."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.netapp_accounts : (
-        v.active_directory == null || (can(regex("^[\\da-zA-Z\\-]{1,10}$", v.active_directory.smb_server_name)))
-      )
-    ])
-    error_message = "smb_server_name can contain a mix of numbers, upper/lowercase letters, dashes, and be no longer than 10 characters."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.netapp_accounts : (
-        v.active_directory == null || (length(v.active_directory.username) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.netapp_accounts : (
-        v.active_directory == null || (length(v.active_directory.password) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_netapp_account's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
@@ -117,6 +85,18 @@ EOT
   #   source:    [from validate.IPv4Address] !ok
   # path: active_directory.dns_servers[*]
   #   source:    [from validate.IPv4Address] four == nil
+  # path: active_directory.domain
+  #   condition: can(regex("^[(\\da-zA-Z-).]{1,255}$", value))
+  #   message:   The domain name must end with a letter or number before dot and start with a letter or number after dot and can not be longer than 255 characters in length.
+  # path: active_directory.smb_server_name
+  #   condition: can(regex("^[\\da-zA-Z\\-]{1,10}$", value))
+  #   message:   smb_server_name can contain a mix of numbers, upper/lowercase letters, dashes, and be no longer than 10 characters.
+  # path: active_directory.username
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: active_directory.password
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: active_directory.kerberos_kdc_ip
   #   source:    validation.IsIPv4Address(...) - no translation rule yet, add one
   # path: tags
