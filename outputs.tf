@@ -4,12 +4,12 @@ output "netapp_accounts_id" {
 }
 output "netapp_accounts_active_directory" {
   description = "Map of active_directory values across all netapp_accounts, keyed the same as var.netapp_accounts"
-  value       = { for k, v in azurerm_netapp_account.netapp_accounts : k => v.active_directory if v.active_directory != null && length(v.active_directory) > 0 }
+  value       = { for k, v in azurerm_netapp_account.netapp_accounts : k => one(v.active_directory) if v.active_directory != null && length(v.active_directory) > 0 }
   sensitive   = true
 }
 output "netapp_accounts_identity" {
   description = "Map of identity values across all netapp_accounts, keyed the same as var.netapp_accounts"
-  value       = { for k, v in azurerm_netapp_account.netapp_accounts : k => v.identity if v.identity != null && length(v.identity) > 0 }
+  value       = { for k, v in azurerm_netapp_account.netapp_accounts : k => one(v.identity) if v.identity != null && length(v.identity) > 0 }
 }
 output "netapp_accounts_location" {
   description = "Map of location values across all netapp_accounts, keyed the same as var.netapp_accounts"
